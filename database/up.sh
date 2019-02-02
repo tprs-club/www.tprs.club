@@ -15,32 +15,42 @@ function gen_pwd() {
 }
 
 DB_DOCKER_IMAGE="mysql"
-DB_DOCKER_LABEL="8.0.14"
+DB_DOCKER_LABEL="5.7.25"
 DB_DOCKER_NAME="tbrs.club.db"
-DB_ROOT_USER="root"
-DB_ROOT_PASSWORD="$(gen_pwd)"
-DB_SECRET=".db.secret"
+MYSQL_DATABASE="tbrs.club"
+MYSQL_USER="tbrs"
+MYSQL_PASSWORD="$(gen_pwd)"
+MYSQL_ROOT_USER="root"
+MYSQL_ROOT_PASSWORD="$(gen_pwd)"
+ENV_FILE=".env"
 SLEEP_IN_SECOND=30
 
 echo "Taking down any running process"
 docker stop $DB_DOCKER_NAME
 docker rm $DB_DOCKER_NAME
 
-echo "Database password is written to $DB_SECRET"
-[ -f "$DB_SECRET" ] && rm -f $DB_SECRET
-echo "DB_DOCKER_NAME=$DB_DOCKER_NAME" >> $DB_SECRET
-echo "DB_ROOT_USER=$DB_ROOT_USER" >> $DB_SECRET
-echo "DB_ROOT_PASSWORD=$DB_ROOT_PASSWORD" >> $DB_SECRET
+echo "Database password is written to $ENV_FILE"
+[ -f "$ENV_FILE" ] && rm -f $ENV_FILE
+echo "DB_DOCKER_NAME=$DB_DOCKER_NAME" >> $ENV_FILE
+echo "MYSQL_ROOT_USER=$MYSQL_ROOT_USER" >> $ENV_FILE
+echo "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD" >> $ENV_FILE
+echo "MYSQL_DATABASE=$MYSQL_DATABASE" >> $ENV_FILE
+echo "MYSQL_USER=$MYSQL_USER" >> $ENV_FILE
+echo "MYSQL_PASSWORD=$MYSQL_PASSWORD" >> $ENV_FILE
 
 echo "Bring up database docker process"
 docker run \
 --name $DB_DOCKER_NAME \
--e MYSQL_ROOT_PASSWORD=$DB_ROOT_PASSWORD \
---expose 3306 \
+-e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
+-e MYSQL_DATABASE=$MYSQL_DATABASE \
+-e MYSQL_USER=$MYSQL_USER \
+-e MYSQL_PASSWORD=$MYSQL_PASSWORD \
+-p 127.0.0.1:33061:3306 \
 -d $DB_DOCKER_IMAGE:$DB_DOCKER_LABEL
 
 echo "Sleep $SLEEP_IN_SECOND seconds to wait for the database."
 sleep $SLEEP_IN_SECOND
 
-echo "Testing connection to the database"
-docker exec -it $DB_DOCKER_NAME mysql -u$DB_ROOT_USER -p$DB_ROOT_PASSWORD -e "show databases"
+echo "Testing connection to the database from docker"
+docker exec -it $DB_DOCKER_NAME mysql -u$MYSQL_ROOT_USER -p$MYSQL_ROOT_PASSWORD -e "show databases"
+docker exec -it $DB_DOCKER_NAME mysql -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE -e "show databases"
