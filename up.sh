@@ -16,6 +16,6 @@ echo "Wait a bit to deploy schema"
 sleep 30
 cd orm
 prisma deploy -e ../.env
-prisma token -e ../.env > ../.runtime.orm.token
+#prisma token -e ../.env > ../.runtime.orm.token
 
 echo "Prisma token is at .runtime.orm.token"

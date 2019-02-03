@@ -12,5 +12,9 @@
 *.out
 
 # Secret files
-.env
+.env*
 .runtime.*
+.*swp
+
+# Configruation files
+config
