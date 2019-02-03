@@ -16,6 +16,7 @@
 .*swp
 dist/
 node_modules/
+.cache/
 
 # Configruation files
 *.env
