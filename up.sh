@@ -15,4 +15,7 @@ docker-compose -f $DC_RUNTIME up -d
 echo "Wait a bit to deploy schema"
 sleep 30
 cd orm
-prisma deploy
+prisma deploy -e ../.env
+prisma token -e ../.env > ../.runtime.orm.token
+
+echo "Prisma token is at .runtime.orm.token"
