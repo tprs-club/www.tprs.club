@@ -11,10 +11,11 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# Secret files
-.env*
+# Temp files
 .runtime.*
 .*swp
+dist/
+node_modules/
 
 # Configruation files
-config
+*.env
