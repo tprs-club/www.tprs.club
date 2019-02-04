@@ -1,7 +1,8 @@
+import uri from './connection'
 import ApolloBoost, { gql } from 'apollo-boost'
 
 const client = new ApolloBoost({
-    uri: 'http://node:4000'
+    uri: uri
 })
 
 const getUsers = gql`
