@@ -5,6 +5,8 @@ services:
     restart: always
     ports:
       - 4466:4466
+    depends_on:
+      - mysql
     environment:
       PRISMA_CONFIG: |
         port: 4466
@@ -19,10 +21,23 @@ services:
   mysql:
     image: mysql:5.7
     restart: always
-    env_file:
-      - ./.env
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: REPLACE_WITH_MYSQL_ROOT_PASSWORD
+  node:
+    image: qiwenzhao/tprs.node:latest
+    restart: always
+    depends_on:
+      - prisma
+    ports:
+      - 4000:4000
+    environment:
+      PRISMA_ENDPOINT: "http://prisma:4466"
+      PRISMA_SECRET: REPLACE_WITH_PRISMA_SECRET
+      JWT_SECRET: REPLACE_WITH_JWT_SECRET
+  web:
+    image: qiwenzhao/tprs.web:latest
+    restart: always
+    depends_on:
+      - node
+    ports:
+      - 8888:80
